@@ -5,7 +5,7 @@
   "description": "",
   "dependencies": {
     "react": "^15.5.0",
-    "react-chrome-redux": "0.0.7",
+    "react-chrome-redux": "1.4.0",
     "react-dom": "^15.5.0",
     "react-redux": "^4.0.0",
     "redux": "^3.0.4"
