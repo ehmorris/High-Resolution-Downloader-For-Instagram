@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "RCR",
-  "description": "React, Chrome, and Redux example",
+  "name": "Instagram High Resolution",
+  "description": "Easily download high resolution copies of any Instagram",
   "version": "0.0.0.1",
   "background": {
     "scripts": [
@@ -15,7 +15,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*/*"],
+      "matches": ["*://instagram.com/*"],
       "css": [],
       "js": ["content.js"]
     }

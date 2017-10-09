@@ -8,7 +8,7 @@ import App from './components/app/App';
 const proxyStore = new Store({portName: 'example'});
 
 const anchor = document.createElement('div');
-anchor.id = 'rcr-anchor';
+anchor.id = 'instagram-high-resolution-download-button';
 
 document.body.insertBefore(anchor, document.body.childNodes[0]);
 
@@ -16,4 +16,4 @@ render(
   <Provider store={proxyStore}>
     <App/>
   </Provider>
-  , document.getElementById('rcr-anchor'));
+  , document.getElementById(anchor.id));

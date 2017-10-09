@@ -16,7 +16,13 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{
+        position: 'fixed',
+        bottom: '10vh',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: '9999'
+      }}>
         Count: {this.props.count}
       </div>
     );
