@@ -4,10 +4,12 @@ import {connect} from 'react-redux';
 class App extends Component {
   constructor(props) {
     super(props);
+    this.buttonHeight = '28px'
   }
 
   componentDidMount() {
     this.setDownloadImage();
+    document.body.style.transform = `translateY(${this.buttonHeight})`;
   }
 
   pickSourceFromSrcset(srcset, filterByConstraint) {
@@ -26,23 +28,31 @@ class App extends Component {
   }
 
   setDownloadImage() {
-    const imageUrl = findImage();
+    const imageUrl = this.findImage();
     this.downloadButton.href = imageUrl;
   }
 
   render() {
-    const buttonStyle = {
-      position: 'fixed',
-      bottom: '10vh',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      zIndex: '9999'
+    const buttonStyles = {
+      background: '#3897f0',
+      border: '1px solid #3897f0',
+      color: '#fff',
+      font: '600 14px/26px -apple-system, BlinkMacSystemFont, sans-serif',
+      height: this.buttonHeight,
+      left: '0',
+      outline: 'none',
+      padding: '0 8px',
+      position: 'absolute',
+      textAlign: 'center',
+      top: `-${this.buttonHeight}`,
+      width: '100%',
+      zIndex: '1'
     }
 
     return (
       <a
         ref={(downloadButton) => { this.downloadButton = downloadButton; }}
-        style={buttonStyle}
+        style={buttonStyles}
         href=""
         download=""
       >
