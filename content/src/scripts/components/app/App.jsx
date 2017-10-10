@@ -4,10 +4,18 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.buttonContainerHeight = '28px'
+
+    this.state = {
+      image: null,
+      video: null,
+      assetObserver: null
+    }
   }
 
   componentDidMount() {
     document.body.style.transform = `translateY(${this.buttonContainerHeight})`;
+
+    this.findAssets();
   }
 
   findLargeAsset(tagName) {
@@ -39,7 +47,7 @@ class App extends Component {
     return this.pickSourceFromSrcset(srcset, '1080w');
   }
 
-  generateButton(link, copy = 'Download') {
+  renderButton(link, copy = 'Download') {
     return (
       <a
         style={{
@@ -53,31 +61,33 @@ class App extends Component {
     )
   }
 
-  renderButtons() {
-    const buttons = [];
+  watchAsset(asset) {
+    var observer = new MutationObserver(() => this.findAssets())
+    observer.observe(asset, { attributes: true });
+    observer.observe(asset.parentNode.parentNode.parentNode, { childList: true });
+  }
 
-    if (this.findVideo()) {
-      const video = this.findVideo();
+  findAssets() {
+    const video = this.findVideo();
+    const image = this.findImage();
 
-      buttons.push(this.generateButton(
-        this.findVideoPosterUrl(video),
-        'Download video thumbnail'
-      ));
+    if (video) {
+      this.setState({ video: video, image: null });
 
-      buttons.push(this.generateButton(
-        this.findVideoUrl(video),
-        'Download video'
-      ));
+      if (!this.state.assetObserver) {
+        this.watchAsset(video);
+        this.setState({ assetObserver: true });
+      }
     }
 
-    if (this.findImage()) {
-      buttons.push(this.generateButton(
-        this.findImageUrl(this.findImage()),
-        'Download image'
-      ));
-    }
+    if (image) {
+      this.setState({ image: image, video: null });
 
-    return buttons;
+      if (!this.state.assetObserver) {
+        this.watchAsset(image);
+        this.setState({ assetObserver: true });
+      }
+    }
   }
 
   render() {
@@ -99,7 +109,16 @@ class App extends Component {
 
     return (
       <div style={buttonContainerStyles}>
-        {this.renderButtons()}
+        {this.state.video &&
+          <div>
+            <span>'Download video thumbnail'</span>
+            <span>'Download video'</span>
+          </div>
+        }
+
+        {this.state.image &&
+          <span>'Download image'</span>
+        }
       </div>
     );
   }
