@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
 
 class App extends Component {
   constructor(props) {
@@ -62,10 +61,4 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    count: state.count
-  };
-};
-
-export default connect(mapStateToProps)(App);
+export default App;
