@@ -55,7 +55,7 @@ class App extends Component {
         href=""
         download=""
       >
-        Download High Resolution Copy
+        Download Highest Resolution Copy
       </a>
     );
   }
