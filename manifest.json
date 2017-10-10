@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Instagram High Resolution",
   "description": "Easily download high resolution copies of any Instagram",
-  "version": "0.0.0.1",
+  "version": "0.0.0.2",
   "content_scripts": [
     {
       "matches": ["*://*.instagram.com/p/*"],

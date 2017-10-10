@@ -6,34 +6,27 @@ class App extends Component {
     this.buttonContainerHeight = '28px'
 
     this.state = {
-      imageUrl: null,
-      videoUrl: null,
-      videoPosterUrl: null
-    }
+      mainAsset: false,
+      assetObserver: false
+    };
   }
 
   componentDidMount() {
     document.body.style.transform = `translateY(${this.buttonContainerHeight})`;
 
-    this.findAssets();
+    const mainAsset = this.findMainAsset();
+    const mainAssetParent = mainAsset.tag.parentNode.parentNode.parentNode;
+
+    this.setState({ mainAsset: mainAsset });
+
+    this.assetMutationUpdater().observe(mainAssetParent, { childList: true });
   }
 
-  findLargeAsset(tagName) {
-    const assets = document.querySelectorAll(tagName);
-    if (assets) {
-      return Array.from(assets).find((asset) => asset.clientWidth > 200);
-    } else {
-      return false;
-    }
+  assetMutationUpdater() {
+    return new MutationObserver(() => {
+      this.setState({ mainAsset: this.findMainAsset() });
+    });
   }
-
-  findImage() { return this.findLargeAsset('img'); }
-
-  findVideo() { return this.findLargeAsset('video'); }
-
-  findVideoPosterUrl(video) { return video.poster; }
-
-  findVideoUrl(video) { return video.src; }
 
   pickSourceFromSrcset(srcset, filterByConstraint) {
     return srcset.map((sourceAndConstraint) => {
@@ -42,44 +35,52 @@ class App extends Component {
     }).join('').trim();
   }
 
-  findImageUrl(imageTag) {
-    const srcset = imageTag.srcset.split(',');
-    return this.pickSourceFromSrcset(srcset, '1080w');
+  assetUrl(asset) {
+    if (asset.srcset) {
+      return this.pickSourceFromSrcset(asset.srcset.split(','), '1080w');
+    } else {
+      return asset.src;
+    }
   }
 
-  watchAsset(asset) {
-    var observer = new MutationObserver(() => this.findAssets())
-    observer.observe(asset, { attributes: true });
-    observer.observe(asset.parentNode.parentNode.parentNode, { childList: true });
+  findLargeAsset(tagName) {
+    const assets = document.querySelectorAll(tagName);
+
+    if (assets) {
+      return Array.from(assets).find((asset) => asset.clientWidth > 200) || false
+    }
+
+    return false
   }
 
   observeMainAsset(asset) {
-    this.watchAsset(asset);
+    if (this.state.assetObserver) {
+      this.state.assetObserver.observe(asset, { attributes: true });
+    } else {
+      const assetObserver = this.assetMutationUpdater();
+      this.setState({ assetObserver: assetObserver });
+      assetObserver.observe(asset, { attributes: true });
+    }
   }
 
-  findAssets() {
-    const video = this.findVideo();
-    const image = this.findImage();
+  findMainAsset() {
+    const mainAsset = this.findLargeAsset('video') || this.findLargeAsset('img');
 
-    if (video) {
-      this.setState({
-        imageUrl: null,
-        videoUrl: this.findVideoUrl(video),
-        videoPosterUrl: this.findVideoPosterUrl(video)
-      });
+    if (mainAsset) {
+      const mainAssetType = mainAsset.tagName;
+      const secondaryUrl = mainAssetType === 'VIDEO' ? mainAsset.poster : false;
 
-      this.observeMainAsset(video);
+      this.observeMainAsset(mainAsset);
+
+      return {
+        tag: mainAsset,
+        type: mainAssetType,
+        url: this.assetUrl(mainAsset),
+        secondaryUrl: secondaryUrl
+      };
     }
 
-    if (image) {
-      this.setState({
-        imageUrl: this.findImageUrl(image),
-        videoUrl: null,
-        videoPosterUrl: null
-      });
-
-      this.observeMainAsset(image);
-    }
+    return false;
   }
 
   render() {
@@ -106,28 +107,20 @@ class App extends Component {
 
     return (
       <div style={buttonContainerStyles}>
-        {this.state.videoUrl &&
-          <div style={{ display: 'block' }}>
-            <a
-              style={linkStyles}
-              href={this.state.videoPosterUrl}
-              download={this.state.videoPosterUrl}
-            >Download video thumbnail</a>
-
-            <a
-              style={linkStyles}
-              href={this.state.videoUrl}
-              download={this.state.videoUrl}
-            >Download video</a>
-          </div>
-        }
-
-        {this.state.imageUrl &&
+        {this.state.mainAsset &&
           <a
             style={linkStyles}
-            href={this.state.imageUrl}
-            download={this.state.imageUrl}
-          >Download image</a>
+            href={this.state.mainAsset.url}
+            download={this.state.mainAsset.url}
+          >Download {this.state.mainAsset.type === 'VIDEO' ? 'video' : 'image'}</a>
+        }
+
+        {(this.state.mainAsset && this.state.mainAsset.secondaryUrl) &&
+          <a
+            style={linkStyles}
+            href={this.state.mainAsset.secondaryUrl}
+            download={this.state.mainAsset.secondaryUrl}
+          >Download video thumbnail</a>
         }
       </div>
     );
