@@ -3,16 +3,9 @@
   "name": "Instagram High Resolution",
   "description": "Easily download high resolution copies of any Instagram",
   "version": "0.0.0.1",
-  "background": {
-    "scripts": [
-      "event.js"
-    ],
-    "persistent": true
-  },
   "content_scripts": [
     {
       "matches": ["*://*.instagram.com/p/*"],
-      "css": [],
       "js": ["content.js"]
     }
   ]
