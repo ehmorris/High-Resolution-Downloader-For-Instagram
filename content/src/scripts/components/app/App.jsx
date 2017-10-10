@@ -6,9 +6,9 @@ class App extends Component {
     this.buttonContainerHeight = '28px'
 
     this.state = {
-      image: null,
-      video: null,
-      assetObserver: null
+      imageUrl: null,
+      videoUrl: null,
+      videoPosterUrl: null
     }
   }
 
@@ -47,24 +47,14 @@ class App extends Component {
     return this.pickSourceFromSrcset(srcset, '1080w');
   }
 
-  renderButton(link, copy = 'Download') {
-    return (
-      <a
-        style={{
-          color: '#fff',
-          margin: '0 .5em'
-        }}
-        key={link}
-        href={link}
-        download={link}
-      >{copy}</a>
-    )
-  }
-
   watchAsset(asset) {
     var observer = new MutationObserver(() => this.findAssets())
     observer.observe(asset, { attributes: true });
     observer.observe(asset.parentNode.parentNode.parentNode, { childList: true });
+  }
+
+  observeMainAsset(asset) {
+    this.watchAsset(asset);
   }
 
   findAssets() {
@@ -72,21 +62,23 @@ class App extends Component {
     const image = this.findImage();
 
     if (video) {
-      this.setState({ video: video, image: null });
+      this.setState({
+        imageUrl: null,
+        videoUrl: this.findVideoUrl(video),
+        videoPosterUrl: this.findVideoPosterUrl(video)
+      });
 
-      if (!this.state.assetObserver) {
-        this.watchAsset(video);
-        this.setState({ assetObserver: true });
-      }
+      this.observeMainAsset(video);
     }
 
     if (image) {
-      this.setState({ image: image, video: null });
+      this.setState({
+        imageUrl: this.findImageUrl(image),
+        videoUrl: null,
+        videoPosterUrl: null
+      });
 
-      if (!this.state.assetObserver) {
-        this.watchAsset(image);
-        this.setState({ assetObserver: true });
-      }
+      this.observeMainAsset(image);
     }
   }
 
@@ -107,17 +99,35 @@ class App extends Component {
       zIndex: '1'
     }
 
+    const linkStyles = {
+      color: '#fff',
+      margin: '0 .5em'
+    }
+
     return (
       <div style={buttonContainerStyles}>
-        {this.state.video &&
-          <div>
-            <span>'Download video thumbnail'</span>
-            <span>'Download video'</span>
+        {this.state.videoUrl &&
+          <div style={{ display: 'block' }}>
+            <a
+              style={linkStyles}
+              href={this.state.videoPosterUrl}
+              download={this.state.videoPosterUrl}
+            >Download video thumbnail</a>
+
+            <a
+              style={linkStyles}
+              href={this.state.videoUrl}
+              download={this.state.videoUrl}
+            >Download video</a>
           </div>
         }
 
-        {this.state.image &&
-          <span>'Download image'</span>
+        {this.state.imageUrl &&
+          <a
+            style={linkStyles}
+            href={this.state.imageUrl}
+            download={this.state.imageUrl}
+          >Download image</a>
         }
       </div>
     );
