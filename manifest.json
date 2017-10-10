@@ -10,7 +10,7 @@
     "persistent": true
   },
   "browser_action": {
-    "default_title": "RCR Example",
+    "default_title": "Instagram High Resolution",
     "default_popup": "popup.html"
   },
   "content_scripts": [
