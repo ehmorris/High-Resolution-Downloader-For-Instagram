@@ -3,33 +3,63 @@ import React, {Component} from 'react';
 class App extends Component {
   constructor(props) {
     super(props);
-    this.buttonContainerHeight = '28px'
-
-    this.state = {
-      mainAsset: false,
-      assetObserver: false
-    };
+    this.state = { mediaUrl: null, mediaRect: null }
   }
 
   componentDidMount() {
-    document.body.style.transform = `translateY(${this.buttonContainerHeight})`;
+    document.addEventListener('click', ({clientX: x, clientY: y}) => {
+      this.setState({ mediaUrl: null, mediaRect: null });
 
-    const mainAsset = this.findMainAsset();
-    const mainAssetParent = mainAsset.tag.parentNode.parentNode.parentNode;
+      const mediaElement = this.mediaAtPoint(x, y);
 
-    this.setState({ mainAsset: mainAsset });
+      if (mediaElement) {
+        const mediaRect = mediaElement.getClientRects()[0];
+        const mediaUrl = this.assetUrl(mediaElement);
 
-    this.assetMutationUpdater().observe(mainAssetParent, { childList: true });
+        if (mediaRect.width > 350) {
+          this.setState({ mediaUrl: mediaUrl, mediaRect: mediaRect });
+          this.copyToClipboard(mediaUrl);
+        }
+      }
+    }, true);
   }
 
-  assetMutationUpdater() {
-    return new MutationObserver(() => {
-      this.setState({ mainAsset: this.findMainAsset() });
-    });
+  copyToClipboard(text) {
+    this.textInput.value = text;
+    this.textInput.select();
+    document.execCommand('Copy');
+  }
+
+  terminateElementLoop(element, elements) {
+    return (
+      ['HTML', 'BODY', 'IMG', 'VIDEO'].includes(element.tagName) ||
+      elements.length > 20
+    );
+  }
+
+  allElementsAtPoint(x, y) {
+    let stack = [], element;
+
+    do {
+      element = document.elementFromPoint(x, y);
+      stack.push(element);
+      element.style.pointerEvents = 'none';
+    } while (!this.terminateElementLoop(element, stack));
+
+    stack.map((stackItem) => stackItem.style.pointerEvents = 'auto');
+
+    return stack;
+  }
+
+  mediaAtPoint(x, y) {
+    const elements = this.allElementsAtPoint(x, y);
+    return elements.find(({tagName: tag}) => ['IMG', 'VIDEO'].includes(tag));
   }
 
   pickSourceFromSrcset(srcset, filterByConstraint) {
-    return srcset.map((sourceAndConstraint) => {
+    const srcsetArray = srcset.split(',');
+
+    return srcsetArray.map((sourceAndConstraint) => {
       const [source, constraint] = sourceAndConstraint.split(' ');
       if (constraint === filterByConstraint) return source;
     }).join('').trim();
@@ -37,90 +67,61 @@ class App extends Component {
 
   assetUrl(asset) {
     if (asset.srcset) {
-      return this.pickSourceFromSrcset(asset.srcset.split(','), '1080w');
+      return this.pickSourceFromSrcset(asset.srcset, '1080w');
     } else {
       return asset.src;
     }
   }
 
-  findLargeAsset(tagName) {
-    const assets = document.querySelectorAll(tagName);
-
-    if (assets) {
-      return Array.from(assets).find((asset) => asset.clientWidth > 200) || false
-    }
-
-    return false
-  }
-
-  observeMainAsset(asset) {
-    if (this.state.assetObserver) {
-      this.state.assetObserver.observe(asset, { attributes: true });
-    } else {
-      const assetObserver = this.assetMutationUpdater();
-      this.setState({ assetObserver: assetObserver });
-      assetObserver.observe(asset, { attributes: true });
-    }
-  }
-
-  findMainAsset() {
-    const mainAsset = this.findLargeAsset('video') || this.findLargeAsset('img');
-
-    if (mainAsset) {
-      const mainAssetType = mainAsset.tagName;
-      const secondaryUrl = mainAssetType === 'VIDEO' ? mainAsset.poster : false;
-
-      this.observeMainAsset(mainAsset);
-
-      return {
-        tag: mainAsset,
-        type: mainAssetType,
-        url: this.assetUrl(mainAsset),
-        secondaryUrl: secondaryUrl
-      };
-    }
-
-    return false;
-  }
-
   render() {
-    const buttonContainerStyles = {
-      background: '#3897f0',
-      border: '1px solid #3897f0',
+    const noticeStyle = {
+      textShadow: '0px 0px 4px #000',
+      padding: '.2em .5em',
       display: 'block',
-      font: '600 14px/26px -apple-system, BlinkMacSystemFont, sans-serif',
-      height: this.buttonContainerHeight,
-      left: '0',
-      outline: 'none',
-      padding: '0 8px',
-      position: 'absolute',
-      textAlign: 'center',
-      top: `-${this.buttonContainerHeight}`,
-      width: '100%',
-      zIndex: '1'
-    }
-
-    const linkStyles = {
+      fontWeight: 'bold',
+      float: 'left',
       color: '#fff',
-      margin: '0 .5em'
-    }
+      margin: '16px 0 0 16px'
+    };
+
+    const buttonStyle = {
+      background: 'rgba(0, 0, 0, .7)',
+      padding: '.2em .5em',
+      display: 'block',
+      float: 'left',
+      color: '#fff',
+      borderRadius: '3px',
+      margin: '16px 0 0 16px'
+    };
 
     return (
-      <div style={buttonContainerStyles}>
-        {this.state.mainAsset &&
-          <a
-            style={linkStyles}
-            href={this.state.mainAsset.url}
-            download={this.state.mainAsset.url}
-          >Download {this.state.mainAsset.type === 'VIDEO' ? 'video' : 'image'}</a>
-        }
+      <div>
+        <input
+          style={{
+            position: 'absolute',
+            opacity: '0',
+            pointerEvents: 'none'
+          }}
+          ref={(input) => { this.textInput = input; }}
+          type="text"
+        />
 
-        {(this.state.mainAsset && this.state.mainAsset.secondaryUrl) &&
-          <a
-            style={linkStyles}
-            href={this.state.mainAsset.secondaryUrl}
-            download={this.state.mainAsset.secondaryUrl}
-          >Download video thumbnail</a>
+        {this.state.mediaUrl &&
+          <div
+            style={{
+              userSelect: 'none',
+              cursor: 'default',
+              position: 'absolute',
+              display: 'block',
+              zIndex: '99',
+              top: `${this.state.mediaRect.top + window.scrollY}px`,
+              left: `${this.state.mediaRect.left}px`
+            }}
+          >
+            <div style={noticeStyle}>Copied!</div>
+            <a download style={buttonStyle} href={this.state.mediaUrl}>Download</a>
+            <a style={buttonStyle} target="_blank" href={this.state.mediaUrl}>Open in tab</a>
+          </div>
         }
       </div>
     );
