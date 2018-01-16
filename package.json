@@ -1,11 +1,12 @@
 {
   "name": "InstagramHighResolution",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "description": "",
   "dependencies": {
     "react": "^15.5.0",
-    "react-dom": "^15.5.0"
+    "react-dom": "^15.5.0",
+    "react-frame-component": "^2.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",

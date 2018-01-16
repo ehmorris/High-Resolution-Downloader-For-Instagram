@@ -1,4 +1,7 @@
 import React, {Component} from 'react';
+import Frame from 'react-frame-component';
+import UI from './UI';
+import CopyToClipboard from './CopyToClipboard';
 
 class App extends Component {
   constructor(props) {
@@ -18,16 +21,9 @@ class App extends Component {
 
         if (mediaRect.width > 350) {
           this.setState({ mediaUrl: mediaUrl, mediaRect: mediaRect });
-          this.copyToClipboard(mediaUrl);
         }
       }
     }, true);
-  }
-
-  copyToClipboard(text) {
-    this.textInput.value = text;
-    this.textInput.select();
-    document.execCommand('Copy');
   }
 
   terminateElementLoop(element, elements) {
@@ -74,55 +70,21 @@ class App extends Component {
   }
 
   render() {
-    const noticeStyle = {
-      textShadow: '0px 0px 4px #000',
-      padding: '.2em .5em',
-      display: 'block',
-      fontWeight: 'bold',
-      float: 'left',
-      color: '#fff',
-      margin: '16px 0 0 16px'
-    };
-
-    const buttonStyle = {
-      background: 'rgba(0, 0, 0, .7)',
-      padding: '.2em .5em',
-      display: 'block',
-      float: 'left',
-      color: '#fff',
-      borderRadius: '3px',
-      margin: '16px 0 0 16px'
-    };
+    if (!this.state.mediaUrl) return false;
 
     return (
-      <div>
-        <input
-          style={{
-            position: 'absolute',
-            opacity: '0',
-            pointerEvents: 'none'
-          }}
-          ref={(input) => { this.textInput = input; }}
-          type="text"
-        />
-
-        {this.state.mediaUrl &&
-          <div
-            style={{
-              userSelect: 'none',
-              cursor: 'default',
-              position: 'absolute',
-              display: 'block',
-              zIndex: '99',
-              top: `${this.state.mediaRect.top + window.scrollY}px`,
-              left: `${this.state.mediaRect.left}px`
-            }}
-          >
-            <div style={noticeStyle}>Copied!</div>
-            <a download style={buttonStyle} href={this.state.mediaUrl}>Download</a>
-            <a style={buttonStyle} target="_blank" href={this.state.mediaUrl}>Open in tab</a>
-          </div>
-        }
+      <div
+        style={{
+          position: 'fixed',
+          zIndex: '100',
+          top: `${this.state.mediaRect.top}px`,
+          left: `${this.state.mediaRect.left}px`
+        }}
+      >
+        <CopyToClipboard content={this.state.mediaUrl} />
+        <Frame>
+          <UI url={this.state.mediaUrl} />
+        </Frame>
       </div>
     );
   }
