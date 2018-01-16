@@ -1,9 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: [
-    './content/src/index.js'
-  ],
+  entry: './content/src/index.js',
 
   output: {
     filename: 'content.js',
@@ -12,7 +10,7 @@ module.exports = {
   },
 
   resolve: {
-    extensions: ['.js', '.jsx', '.scss', '.json'],
+    extensions: ['.js', '.jsx'],
     modules: ['node_modules']
   },
 
