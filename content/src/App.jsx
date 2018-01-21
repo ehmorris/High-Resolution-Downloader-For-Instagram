@@ -1,23 +1,27 @@
 import React, {Component} from 'react';
-import Frame from 'react-frame-component';
 import UI from './UI';
-import CopyToClipboard from './CopyToClipboard';
 
 class App extends Component {
   constructor(props) {
     super(props);
+
+    this.resetApp = this.resetApp.bind(this);
     this.state = { mediaUrl: null, mediaRect: null }
+  }
+
+  resetApp() {
+    this.setState({ mediaUrl: null, mediaRect: null });
   }
 
   componentDidMount() {
     document.addEventListener('click', ({clientX: x, clientY: y}) => {
-      this.setState({ mediaUrl: null, mediaRect: null });
+      this.resetApp();
 
       const mediaElement = this.mediaAtPoint(x, y);
 
       if (mediaElement) {
         const mediaRect = mediaElement.getClientRects()[0];
-        const mediaUrl = this.assetUrl(mediaElement);
+        const mediaUrl = this.getMediaUrl(mediaElement);
 
         if (mediaRect.width > 350) {
           this.setState({ mediaUrl: mediaUrl, mediaRect: mediaRect });
@@ -61,32 +65,26 @@ class App extends Component {
     }).join('').trim();
   }
 
-  assetUrl(asset) {
-    if (asset.srcset) {
-      return this.pickSourceFromSrcset(asset.srcset, '1080w');
+  getMediaUrl(media) {
+    if (media.srcset) {
+      return this.pickSourceFromSrcset(media.srcset, '1080w');
     } else {
-      return asset.src;
+      return media.src;
     }
   }
 
   render() {
-    if (!this.state.mediaUrl) return false;
+    if (this.state.mediaUrl) {
+      return (
+        <UI
+          url={this.state.mediaUrl}
+          mediaRect={this.state.mediaRect}
+          shouldUnmount={this.resetApp}
+        />
+      );
+    }
 
-    return (
-      <div
-        style={{
-          position: 'fixed',
-          zIndex: '100',
-          top: `${this.state.mediaRect.top}px`,
-          left: `${this.state.mediaRect.left}px`
-        }}
-      >
-        <CopyToClipboard content={this.state.mediaUrl} />
-        <Frame>
-          <UI url={this.state.mediaUrl} />
-        </Frame>
-      </div>
-    );
+    return null;
   }
 }
 
