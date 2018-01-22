@@ -2,7 +2,9 @@
 
 This is a simple Chrome Extension that finds the highest resolution url of an Instagram asset on click. It searches through the srcset for the best quality image url and copies it to the clipboard automatically, as well as showing download and open buttons. It works by finding any image asset at a click event’s coordinates, making it resilient to simple DOM changes.
 
-[Availble on the Chrome Web Store](https://chrome.google.com/webstore/detail/instagram-high-resolution/jegjlojkkmlmfnhnogmmfbfamjdabgom).
+[Available on the Chrome Web Store](https://chrome.google.com/webstore/detail/instagram-high-resolution/jegjlojkkmlmfnhnogmmfbfamjdabgom).
+
+![](https://i.imgur.com/7QSXPTl.png)
 
 ### Development
 
