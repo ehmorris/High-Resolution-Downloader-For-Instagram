@@ -1,9 +1,10 @@
 {
   "name": "InstagramHighResolution",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "private": true,
   "description": "",
   "dependencies": {
+    "copy-webpack-plugin": "^4.3.1",
     "react": "^15.5.0",
     "react-dom": "^15.5.0",
     "react-frame-component": "^2.0.1"
