@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width,initial-scale=1" name="viewport">
+    <meta name="google-site-verification" content="O3HbPMHwNZklENXZN6BLFdfzZGY-Ap6Do2J5mz1dqxM">
+    <title>Instagram High Resolution Downloader Chrome Extension</title>
+    <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/jegjlojkkmlmfnhnogmmfbfamjdabgom">
+    <style>
+      body {
+        background: #6d8487;
+        color: #ffffff;
+        font: 300 2.5rem/1.4 -apple-system, BlinkMacSystemFont, sans-serif;
+        margin: 0;
+        overflow: hidden;
+        padding: 0;
+        user-select: none;
+      }
+
+      @media (max-width: 650px) {
+        body {
+          font-size: 1.8rem;
+        }
+      }
+
+      h1 {
+        font-weight: 800;
+      }
+
+      h1, p, a {
+        color: inherit;
+        font-size: inherit;
+        margin: 0;
+      }
+
+      a {
+        font-weight: 500;
+        text-decoration-skip: ink;
+        text-decoration: underline;
+      }
+
+      a:hover {
+        text-decoration: none;
+      }
+
+      .page {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        justify-content: space-between;
+        max-width: 19em;
+        padding: 2em;
+        width: 100vw;
+      }
+
+      @media (max-width: 650px) {
+        .page {
+          padding: 1.2em;
+        }
+      }
+
+      .tinyText {
+        font-size: .5em;
+      }
+
+      .buttonAndMessage {
+        margin-top: 1em;
+      }
+
+      .button {
+        cursor: pointer;
+        display: inline-block;
+      }
+
+      .button--inactive {
+        cursor: default;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="page-top">
+        <h1>Instagram High <br> Resolution Downloader</h1>
+        <p>Download any photo or video on Instagram, from stories, the feed, slideshows, or profiles. Always get the largest available size.</p>
+
+        <div class="buttonAndMessage">
+          <a
+            data-install-prompt
+            class="button"
+          >Add to Chrome</a>
+          <div
+            data-installed-message
+            class="button button--inactive"
+          >Added to Chrome!</div>
+
+          <div class="tinyText">Your data is never tracked, saved, or sent anywhere.</div>
+        </div>
+      </div>
+
+      <div class="page-bottom tinyText">
+        <a target="_blank" href="https://github.com/ehmorris/Instagram-High-Resolution-Downloader">Read the code</a>
+        or
+        <a target="_blank" href="https://github.com/ehmorris/Instagram-High-Resolution-Downloader/issues">file a bug</a>
+      </div>
+    </div>
+
+    <script>
+      const installPrompt = document.querySelector('[data-install-prompt]');
+      const installedMessage = document.querySelector('[data-installed-message]');
+
+      if (chrome.app.isInstalled) {
+        installPrompt.remove();
+      } else {
+        installedMessage.remove();
+      }
+
+      installPrompt.addEventListener('click', () => {
+        chrome.webstore.install();
+      });
+    </script>
+  </body>
+</html>
