@@ -89,11 +89,16 @@
           <a
             data-install-prompt
             class="button"
+            href="https://chrome.google.com/webstore/detail/instagram-high-resolution/jegjlojkkmlmfnhnogmmfbfamjdabgom"
           >Add to Chrome</a>
           <div
             data-installed-message
             class="button button--inactive"
           >Added to Chrome!</div>
+          <div
+            data-invalid-message
+            class="button button--inactive"
+          >Open Chrome to Add</div>
 
           <div class="tinyText">Your data is never tracked, saved, or sent anywhere.</div>
         </div>
@@ -109,15 +114,19 @@
     <script>
       const installPrompt = document.querySelector('[data-install-prompt]');
       const installedMessage = document.querySelector('[data-installed-message]');
+      const invalidMessage = document.querySelector('[data-invalid-message]');
 
-      if (chrome.app.isInstalled) {
-        installPrompt.remove();
+      if (typeof chrome !== 'undefined') {
+        invalidMessage.remove();
+        chrome.app.isInstalled ? installPrompt.remove() : installedMessage.remove();
       } else {
+        installPrompt.remove();
         installedMessage.remove();
       }
 
-      installPrompt.addEventListener('click', () => {
+      installPrompt.addEventListener('click', (e) => {
         chrome.webstore.install();
+        e.preventDefault();
       });
     </script>
   </body>
