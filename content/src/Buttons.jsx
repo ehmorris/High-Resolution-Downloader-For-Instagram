@@ -5,10 +5,7 @@ import Notice from './Notice';
 class Buttons extends Component {
   constructor(props) {
     super(props);
-
     this.state = { blobUrl: null };
-    this.downloadAbortController = new AbortController();
-    this.downloadAbortControllerSignal = this.downloadAbortController.signal;
   }
 
   componentDidMount() {
@@ -18,12 +15,8 @@ class Buttons extends Component {
       });
   }
 
-  componentWillUnmount() {
-    this.fetchAbortController.abort();
-  }
-
   convertUrlToBlobUrl(url) {
-    return fetch(url, {this.downloadAbortControllerSignal})
+    return fetch(url)
       .then((response) => response.blob())
       .then((blob) => URL.createObjectURL(blob));
   }
