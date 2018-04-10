@@ -8,6 +8,8 @@ class UI extends Component {
     super(props);
 
     this.handleScroll = this.handleScroll.bind(this);
+    this.setClicked = this.setClicked.bind(this);
+
     this.state = {
       top: this.props.mediaRect.top,
       copied: false
@@ -26,7 +28,7 @@ class UI extends Component {
     document.removeEventListener('click', this.setClicked);
   }
 
-  handleScroll(event) {
+  handleScroll() {
     const pixelsTraveled = window.scrollY - this.initialTopOffset;
     const newTop = this.initialTop - pixelsTraveled;
     this.setState({ top: newTop });
