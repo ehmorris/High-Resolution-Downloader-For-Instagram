@@ -7,6 +7,8 @@ class Buttons extends Component {
     super(props);
 
     this.state = { blobUrl: null };
+    this.downloadAbortController = new AbortController();
+    this.downloadAbortControllerSignal = this.downloadAbortController.signal;
   }
 
   componentDidMount() {
@@ -16,8 +18,12 @@ class Buttons extends Component {
       });
   }
 
+  componentWillUnmount() {
+    this.fetchAbortController.abort();
+  }
+
   convertUrlToBlobUrl(url) {
-    return fetch(url)
+    return fetch(url, {this.downloadAbortControllerSignal})
       .then((response) => response.blob())
       .then((blob) => URL.createObjectURL(blob));
   }
@@ -36,7 +42,9 @@ class Buttons extends Component {
 
     return (
       <div style={containerStyle}>
-        <Notice>URL COPIED</Notice>
+        {this.props.copied &&
+          <Notice>URL COPIED</Notice>
+        }
 
         <Button
           href={this.state.blobUrl}

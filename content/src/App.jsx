@@ -14,18 +14,18 @@ class App extends Component {
   }
 
   componentDidMount() {
-    document.addEventListener('click', ({clientX: x, clientY: y}) => {
-      this.resetApp();
-
+    document.addEventListener('mousemove', ({clientX: x, clientY: y}) => {
       const mediaElement = this.mediaAtPoint(x, y);
 
       if (mediaElement) {
         const mediaRect = mediaElement.getClientRects()[0];
         const mediaUrl = this.getMediaUrl(mediaElement);
 
-        if (mediaRect.width > 350) {
+        if (mediaUrl !== this.state.mediaUrl && mediaRect.width > 350) {
           this.setState({ mediaUrl: mediaUrl, mediaRect: mediaRect });
         }
+      } else {
+        this.resetApp();
       }
     }, true);
   }

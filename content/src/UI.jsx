@@ -8,17 +8,22 @@ class UI extends Component {
     super(props);
 
     this.handleScroll = this.handleScroll.bind(this);
-    this.state = { top: this.props.mediaRect.top };
+    this.state = {
+      top: this.props.mediaRect.top,
+      copied: false
+    };
   }
 
   componentDidMount() {
     this.initialTopOffset = window.scrollY;
     this.initialTop = this.state.top;
     document.addEventListener('scroll', this.handleScroll);
+    document.addEventListener('click', this.setClicked);
   }
 
   componentWillUnmount() {
     document.removeEventListener('scroll', this.handleScroll);
+    document.removeEventListener('click', this.setClicked);
   }
 
   handleScroll(event) {
@@ -29,6 +34,10 @@ class UI extends Component {
     if (newTop < -150) {
       this.props.shouldUnmount();
     }
+  }
+
+  setClicked() {
+    this.setState({ copied: true });
   }
 
   render() {
@@ -44,9 +53,11 @@ class UI extends Component {
           zIndex: '100'
         }}
       >
-        <CopyToClipboard content={this.props.url} />
+        {this.state.copied &&
+          <CopyToClipboard content={this.props.url} />
+        }
         <Frame>
-          <Buttons url={this.props.url} />
+          <Buttons copied={this.state.copied} url={this.props.url} />
         </Frame>
       </div>
     );
