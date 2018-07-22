@@ -4,7 +4,7 @@
 
 This is a simple Chrome Extension that finds the highest resolution url of an Instagram asset.
 
-[Available on the Chrome Web Store](https://chrome.google.com/webstore/detail/instagram-high-resolution/jegjlojkkmlmfnhnogmmfbfamjdabgom).
+[Available on the Chrome Web Store](https://chrome.google.com/webstore/detail/high-resolution-downloade/hbijmiokbffalbolieapplfhmmnioeao).
 
 ### How It Works
 
