@@ -13,20 +13,29 @@ class Buttons extends Component {
   }
 
   componentDidMount() {
-    const loadingTimeout = window.setTimeout(() => {
+    this.mounted = true;
+
+    this.loadingTimeout = window.setTimeout(() => {
       this.setState({
         blobLoading: true,
       });
-    }, 500);
+    }, 700);
 
     this.convertUrlToBlobUrl(this.props.url)
       .then((blobUrl) => {
-        window.clearTimeout(loadingTimeout);
-        this.setState({
-          blobUrl: blobUrl,
-          blobLoading: false,
-        });
+        window.clearTimeout(this.loadingTimeout);
+        if (this.mounted) {
+          this.setState({
+            blobUrl: blobUrl,
+            blobLoading: false,
+          });
+        }
       });
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+    window.clearTimeout(this.loadingTimeout);
   }
 
   convertUrlToBlobUrl(url) {
