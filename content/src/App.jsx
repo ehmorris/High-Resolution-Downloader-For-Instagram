@@ -17,11 +17,13 @@ class App extends Component {
     document.addEventListener('click', ({clientX: x, clientY: y}) => {
       this.resetApp();
 
-      const mediaElement = this.mediaAtPoint(x, y);
+      const mediaObject = this.mediaAtPoint(x, y);
 
-      if (mediaElement) {
-        const mediaRect = mediaElement.getClientRects()[0];
-        const mediaUrl = this.getMediaUrl(mediaElement);
+      if (mediaObject) {
+        const mediaRect = mediaObject.clippingParent
+          ? mediaObject.clippingParent.getClientRects()[0]
+          : mediaObject.media.getClientRects()[0];
+        const mediaUrl = this.getMediaUrl(mediaObject.media);
 
         if (mediaRect.width > 335) {
           this.setState({ mediaUrl: mediaUrl, mediaRect: mediaRect });
@@ -60,15 +62,23 @@ class App extends Component {
     return stack;
   }
 
+  clippingElements(element_stack) {
+    return element_stack.filter(element => {
+      const elementIsFullWidth = element.clientWidth === window.innerWidth;
+      return elementIsFullWidth ? false : getComputedStyle(element).overflow === 'hidden';
+    });
+  }
+
   mediaAtPoint(x, y) {
     const elements = this.allElementsAtPoint(x, y);
     const videos = elements.filter(({tagName: tag}) => tag === 'VIDEO');
     const images = elements.filter(({tagName: tag}) => tag === 'IMG');
+    const clippingParents = this.clippingElements(elements);
 
-    if (videos.length) {
-      return videos[0];
-    } else if (images.length) {
-      return images[0];
+    if (videos.length || images.length) {
+      const media = videos.length ? videos[0] : images[0];
+      const clippingParent = clippingParents.length > 0 ? clippingParents[0] : null;
+      return { media, clippingParent };
     }
   }
 
