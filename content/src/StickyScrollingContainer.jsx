@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Frame from 'react-frame-component';
-import Buttons from './Buttons';
-import CopyToClipboard from './CopyToClipboard';
-import { minTopValue } from './constants';
 
-function UI({ mediaRect, url, shouldUnmount }) {
+function StickyScrollingContainer({ children, mediaRect, shouldUnmount }) {
   const [top, setTop] = useState(mediaRect.top);
   const [initialTopOffset, setInitialTopOffset] = useState(mediaRect.top);
+  const minTopValue = 35;
 
   const handleScroll = event => {
     const pixelsTraveled = window.scrollY - initialTopOffset;
@@ -40,12 +37,9 @@ function UI({ mediaRect, url, shouldUnmount }) {
         zIndex: '100',
       }}
     >
-      <CopyToClipboard content={url} />
-      <Frame>
-        <Buttons url={url} />
-      </Frame>
+      {children}
     </div>
   );
 }
 
-export default UI;
+export default StickyScrollingContainer;

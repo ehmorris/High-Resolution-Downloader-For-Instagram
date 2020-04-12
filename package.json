@@ -1,6 +1,6 @@
 {
   "name": "HighResolutionDownloaderForInstagram",
-  "version": "2.0.20",
+  "version": "2.0.21",
   "private": true,
   "description": "",
   "dependencies": {
@@ -23,6 +23,7 @@
     "prettier": "^1.18.2"
   },
   "scripts": {
-    "format": "prettier --write \"**/*.{js,jsx,json}\""
+    "format": "prettier --write \"**/*.{js,jsx,json}\"",
+    "develop": "yarn run gulp && yarn run gulp watch"
   }
 }
